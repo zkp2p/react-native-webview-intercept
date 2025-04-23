@@ -7,15 +7,7 @@ import com.facebook.react.module.annotations.ReactModule
 class WebviewInterceptSdkModule(reactContext: ReactApplicationContext) :
   NativeWebviewInterceptSdkSpec(reactContext) {
 
-  override fun getName(): String {
-    return NAME
-  }
-
-  // Example method
-  // See https://reactnative.dev/docs/native-modules-android
-  override fun multiply(a: Double, b: Double): Double {
-    return a * b
-  }
+  override fun getName() = NAME
 
   companion object {
     const val NAME = "WebviewInterceptSdk"
