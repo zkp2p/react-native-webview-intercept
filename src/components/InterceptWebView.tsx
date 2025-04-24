@@ -4,80 +4,83 @@ import WebView, {
   type WebViewMessageEvent,
   type WebViewProps,
 } from 'react-native-webview';
-import { injectedScript } from '../helpers/injected';
+import type { InterceptConfig, NetworkEvent } from '../types';
+import { buildInjector } from '../helpers/injectorBuilder';
 
-export interface InterceptPayload {
-  type: 'network';
-  api: 'fetch' | 'xhr';
-  request: {
-    url: string;
-    method: string;
-    headers: Record<string, string>;
-    body?: string | null;
-  };
-  response: {
-    url: string;
-    status: number;
-    headers: Record<string, string>;
-    body: string | null;
-  };
-}
-
-export interface InterceptWebViewProps extends Omit<WebViewProps, 'onMessage'> {
-  onIntercept?: (payload: InterceptPayload) => void;
+export interface InterceptWebViewProps
+  extends Omit<
+    WebViewProps,
+    'onMessage' | 'injectedJavaScriptBeforeContentLoaded'
+  > {
+  /** Called whenever a packet whose URL passes `urlPattern` is intercepted. */
+  onIntercept?: (evt: NetworkEvent) => void;
+  /** RegExp or string filter (runs on `evt.request.url`). */
   urlPattern?: RegExp | string;
   style?: ViewStyle | ViewStyle[];
   onMessage?: (event: WebViewMessageEvent) => void;
+  interceptConfig?: InterceptConfig;
 }
 
-function Component(
-  { onIntercept, urlPattern, onMessage, ...rest }: InterceptWebViewProps,
-  ref: any
-) {
-  const regex = useMemo(() => {
-    if (!urlPattern) return null;
-    return typeof urlPattern === 'string' ? new RegExp(urlPattern) : urlPattern;
-  }, [urlPattern]);
+/* Util: string ⟷ RegExp */
+const compile = (p?: RegExp | string | null) =>
+  !p ? null : typeof p === 'string' ? new RegExp(p) : p;
 
-  const passes = (url?: string) => {
-    if (!regex) return true;
-    return !!url && regex.test(url);
-  };
+function Base(props: InterceptWebViewProps, ref: any) {
+  const {
+    onIntercept,
+    urlPattern,
+    onMessage,
+    interceptConfig,
+    originWhitelist = ['*'],
+    javaScriptEnabled = true,
+    domStorageEnabled = true,
+    thirdPartyCookiesEnabled = true,
+    setSupportMultipleWindows = false,
+    startInLoadingState = true,
+    ...rest
+  } = props;
 
-  const forwardIfMatch = (payload: InterceptPayload) => {
-    if (passes(payload.request.url)) onIntercept?.(payload);
-  };
+  const injector = useMemo(
+    () => buildInjector(interceptConfig),
+    [interceptConfig]
+  );
+  const regex = useMemo(() => compile(urlPattern), [urlPattern]);
+
+  const scriptKey = injector.length;
 
   const handleMessage = (e: WebViewMessageEvent) => {
     try {
-      const data: InterceptPayload = JSON.parse(e.nativeEvent.data);
-      if (data && data.type === 'network') forwardIfMatch(data);
-    } catch (_) {
-      console.error('Error parsing intercepted message:', e.nativeEvent.data);
-    }
+      const pkt: NetworkEvent = JSON.parse(e.nativeEvent.data);
+      if (pkt.type === 'network' && (!regex || regex.test(pkt.request.url))) {
+        onIntercept?.(pkt);
+      }
+    } catch {} // swallow non-sdk messages
     onMessage?.(e);
   };
 
-  const patternForNative = useMemo(() => {
-    if (!urlPattern) return undefined;
-    if (urlPattern instanceof RegExp) return urlPattern.toString();
-    return urlPattern;
-  }, [urlPattern]);
-
   return (
     <WebView
+      key={scriptKey}
       ref={ref}
-      originWhitelist={['*']}
-      injectedJavaScriptBeforeContentLoaded={injectedScript}
+      originWhitelist={originWhitelist}
+      injectedJavaScriptBeforeContentLoaded={injector}
       onMessage={handleMessage}
-      {...(Platform.OS === 'android'
+      javaScriptEnabled={javaScriptEnabled}
+      domStorageEnabled={domStorageEnabled}
+      thirdPartyCookiesEnabled={thirdPartyCookiesEnabled}
+      setSupportMultipleWindows={setSupportMultipleWindows}
+      startInLoadingState={startInLoadingState}
+      {...(Platform.OS === 'android' && urlPattern
         ? {
-            urlPattern: patternForNative,
+            urlPattern: (urlPattern instanceof RegExp
+              ? urlPattern.toString()
+              : urlPattern) as any,
           }
-        : {})}
+        : null)}
       {...rest}
     />
   );
 }
 
-export const InterceptWebView = forwardRef(Component);
+export const InterceptWebView = forwardRef(Base);
+export default InterceptWebView;
