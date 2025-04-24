@@ -10556,9 +10556,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"react-native-webview-intercept@workspace:.":
+"react-native-webview-intercept-sdk@workspace:.":
   version: 0.0.0-use.local
-  resolution: "react-native-webview-intercept@workspace:."
+  resolution: "react-native-webview-intercept-sdk@workspace:."
   dependencies:
     "@commitlint/config-conventional": ^19.6.0
     "@eslint/compat": ^1.2.7
