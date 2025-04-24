@@ -1,7 +1,7 @@
 {
-  "name": "react-native-webview-intercept-sdk",
+  "name": "react-native-webview-intercept",
   "version": "0.1.0",
-  "description": "Intercepts requests in webview",
+  "description": "Wrapper around react-native-webview that intercepts fetch and XHR requests and responses",
   "source": "./src/index.tsx",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
@@ -47,14 +47,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/richardliang/react-native-webview-intercept-sdk.git"
+    "url": "git+https://github.com/zkp2p/react-native-webview-intercept-sdk.git"
   },
   "author": "Richard <richard@zkp2p.xyz> (https://github.com/richardliang)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/richardliang/react-native-webview-intercept-sdk/issues"
+    "url": "https://github.com/zkp2p/react-native-webview-intercept-sdk/issues"
   },
-  "homepage": "https://github.com/richardliang/react-native-webview-intercept-sdk#readme",
+  "homepage": "https://github.com/zkp2p/react-native-webview-intercept-sdk#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
