@@ -10583,7 +10583,7 @@ __metadata:
     react-native-webview: ^13.13.5
     release-it: ^17.10.0
     turbo: ^1.10.7
-    typescript: ^5.2.2
+    typescript: ^5.8.3
   peerDependencies:
     react: "*"
     react-native: "*"
@@ -12272,7 +12272,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5.2.2":
+"typescript@npm:^5.8.3":
   version: 5.8.3
   resolution: "typescript@npm:5.8.3"
   bin:
@@ -12282,7 +12282,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^5.2.2#~builtin<compat/typescript>":
+"typescript@patch:typescript@^5.8.3#~builtin<compat/typescript>":
   version: 5.8.3
   resolution: "typescript@patch:typescript@npm%3A5.8.3#~builtin<compat/typescript>::version=5.8.3&hash=f3b441"
   bin:
