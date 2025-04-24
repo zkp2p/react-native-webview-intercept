@@ -13,18 +13,10 @@ runs:
       run: corepack enable
       shell: bash
 
-    - name: Clean yarn cache
-      run: |
-        rm -rf .yarn/cache
-        rm -rf node_modules
-      shell: bash
-
-    - name: Configure Yarn
-      run: |
-        yarn config set nodeLinker node-modules
+    - name: Set Yarn version
+      run: corepack prepare yarn@3.6.1 --activate
       shell: bash
 
     - name: Install dependencies
-      run: |
-        yarn install
+      run: yarn install --immutable
       shell: bash
