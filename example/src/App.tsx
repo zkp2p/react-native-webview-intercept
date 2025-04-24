@@ -5,6 +5,7 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Text,
+  Platform,
 } from 'react-native';
 import { InterceptWebView } from 'react-native-webview-intercept-sdk';
 import { useState, useRef } from 'react';
@@ -15,6 +16,13 @@ interface Notification {
   id: number;
   message: string;
 }
+
+const DEFAULT_USER_AGENT = Platform.select({
+  ios: 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1',
+  android:
+    'Mozilla/5.0 (Linux; Android 13; Pixel 6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36',
+  default: '',
+});
 
 export default function App() {
   const [url, setUrl] = useState('https://www.google.com');
@@ -66,9 +74,7 @@ export default function App() {
             xhr: true,
             fetch: true,
           }}
-          userAgent={
-            'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1'
-          }
+          userAgent={DEFAULT_USER_AGENT}
           onNavigationStateChange={(navState) => {
             console.log('Navigation state:', navState);
           }}
