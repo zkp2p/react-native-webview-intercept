@@ -15,7 +15,7 @@ runs:
 
     - name: Set Yarn version
       run: |
-        corepack prepare yarn@3.6.1 --activate
+        corepack prepare yarn@3.6.3 --activate
         yarn config set nodeLinker node-modules
         yarn config set nmHoistingLimits workspaces
       shell: bash
