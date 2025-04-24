@@ -22,7 +22,7 @@ runs:
 
     - name: Install dependencies
       run: |
-        yarn install --check-cache
+        yarn install
       shell: bash
 
     - name: Cache dependencies
