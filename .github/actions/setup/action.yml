@@ -9,6 +9,10 @@ runs:
       with:
         node-version-file: .nvmrc
 
+    - name: Enable Corepack
+      run: corepack enable
+      shell: bash
+
     - name: Clean yarn cache
       run: |
         rm -rf .yarn/cache
