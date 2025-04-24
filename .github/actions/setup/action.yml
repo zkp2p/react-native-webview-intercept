@@ -13,13 +13,6 @@ runs:
       run: corepack enable
       shell: bash
 
-    - name: Set Yarn version
-      run: |
-        corepack prepare yarn@3.6.4 --activate
-        yarn config set nodeLinker node-modules
-        yarn config set nmHoistingLimits workspaces
-      shell: bash
-
     - name: Install dependencies
-      run: yarn install --immutable --inline-builds
+      run: yarn install
       shell: bash 
