@@ -9,6 +9,7 @@ export interface NetworkEvent {
     method?: string; // "GET", "POST" (undefined for <form> GET)
     headers: Record<string, string>;
     body?: string | null;
+    cookie: string | null;
   };
 
   response: {

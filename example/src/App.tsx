@@ -73,6 +73,8 @@ export default function App() {
           interceptConfig={{
             xhr: true,
             fetch: true,
+            html: true,
+            maxBodyBytes: 1024 * 1024 * 10,
           }}
           userAgent={DEFAULT_USER_AGENT}
           onNavigationStateChange={(navState) => {
