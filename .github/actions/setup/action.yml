@@ -18,7 +18,6 @@ runs:
     - name: Configure Yarn
       run: |
         yarn config set nodeLinker node-modules
-        yarn config set checksumBehavior update
       shell: bash
 
     - name: Install dependencies
