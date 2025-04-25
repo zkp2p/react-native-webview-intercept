@@ -12,9 +12,9 @@ class InterceptWebViewManager : SimpleViewManager<RNCWebView>() {
         return RNCWebView(reactContext)
     }
 
-    @ReactProp(name = "urlPattern")
-    fun setUrlPattern(view: RNCWebView, pattern: String?) {
-        // This is where we'll handle the URL pattern for Android
-        // The actual implementation will depend on how you want to handle the pattern
+    @ReactProp(name = "urlPatterns")
+    fun setUrlPatterns(view: RNCWebView, patterns: String?) {
+        // Handle array of patterns
+        // Implementation depends on how you're using the patterns in Android
     }
 } 
