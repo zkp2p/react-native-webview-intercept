@@ -19,13 +19,14 @@ import { InterceptWebView } from '@zkp2p/react-native-webview-intercept';
 
 <InterceptWebView
     ref={webViewRef}
-    source={{ uri: 'https://www.google.com' }}
+    source={{ uri: 'https://account.venmo.com/?feed=mine' }}
     interceptConfig={{
         xhr: true,
         fetch: true,
         html: true,
         maxBodyBytes: 1024 * 1024 * 10,
     }}
+    urlPatterns={['https://account.venmo.com/api/stories\\?feedType=me&externalId=\\S+']}
     userAgent={DEFAULT_USER_AGENT}
     onNavigationStateChange={(navState) => {
         console.log('Navigation state:', navState);
