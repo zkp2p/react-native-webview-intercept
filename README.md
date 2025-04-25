@@ -5,20 +5,38 @@ Intercepts requests in webview
 ## Installation
 
 ```sh
-npm install react-native-webview-intercept-sdk
+yarn install react-native-webview-intercept
 ```
 
 ## Usage
-
+See example app for usage
 
 ```js
-import { multiply } from 'react-native-webview-intercept-sdk';
+import { InterceptWebView } from 'react-native-webview-intercept';
 
-// ...
-
-const result = multiply(3, 7);
+<InterceptWebView
+    ref={webViewRef}
+    source={{ uri: 'https://www.google.com' }}
+    interceptConfig={{
+        xhr: true,
+        fetch: true,
+        html: true,
+        maxBodyBytes: 1024 * 1024 * 10,
+    }}
+    userAgent={DEFAULT_USER_AGENT}
+    onNavigationStateChange={(navState) => {
+        console.log('Navigation state:', navState);
+    }}
+    onLoadEnd={() => console.log('page done')}
+    onError={(syntheticEvent) => {
+        console.error('WebView error:', syntheticEvent.nativeEvent);
+    }}
+    onIntercept={(payload) => {
+        console.log('➜ intercepted', payload);
+    }}
+    style={styles.webview}
+/>
 ```
-
 
 ## Contributing
 
