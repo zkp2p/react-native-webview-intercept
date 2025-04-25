@@ -7,7 +7,7 @@ import {
   Text,
   Platform,
 } from 'react-native';
-import { InterceptWebView } from 'react-native-webview-intercept-sdk';
+import { InterceptWebView } from '../../src';
 import { useState, useRef } from 'react';
 import { WebView } from 'react-native-webview';
 import { RequestNotification } from './components/RequestNotification';
@@ -69,7 +69,8 @@ export default function App() {
       <View style={styles.webviewContainer}>
         <InterceptWebView
           ref={webViewRef}
-          source={{ uri: 'https://www.google.com' }}
+          source={{ uri: 'https://account.venmo.com/?feed=mine' }}
+          urlPattern="https://account.venmo.com/api/stories\\?feedType=me&externalId=\\S+"
           interceptConfig={{
             xhr: true,
             fetch: true,

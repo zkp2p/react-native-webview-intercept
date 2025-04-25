@@ -22,8 +22,15 @@ export interface InterceptWebViewProps
 }
 
 /* Util: string ⟷ RegExp */
-const compile = (p?: RegExp | string | null) =>
-  !p ? null : typeof p === 'string' ? new RegExp(p) : p;
+const compile = (p?: RegExp | string | null) => {
+  if (!p) return null;
+  if (typeof p === 'string') {
+    // Remove the need for double escaping by replacing \\ with \
+    const cleanPattern = p.replace(/\\\\/g, '\\');
+    return new RegExp(cleanPattern);
+  }
+  return p;
+};
 
 function Base(props: InterceptWebViewProps, ref: any) {
   const {
