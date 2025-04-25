@@ -12,10 +12,10 @@ export interface InterceptWebViewProps
     WebViewProps,
     'onMessage' | 'injectedJavaScriptBeforeContentLoaded'
   > {
-  /** Called whenever a packet whose URL passes `urlPattern` is intercepted. */
+  /** Called whenever a packet whose URL passes any of the `urlPatterns` is intercepted. */
   onIntercept?: (evt: NetworkEvent) => void;
-  /** RegExp or string filter (runs on `evt.request.url`). */
-  urlPattern?: RegExp | string;
+  /** Array of RegExp or string filters (runs on `evt.request.url`). */
+  urlPatterns?: (RegExp | string)[];
   style?: ViewStyle | ViewStyle[];
   onMessage?: (event: WebViewMessageEvent) => void;
   interceptConfig?: InterceptConfig;
@@ -35,7 +35,7 @@ const compile = (p?: RegExp | string | null) => {
 function Base(props: InterceptWebViewProps, ref: any) {
   const {
     onIntercept,
-    urlPattern,
+    urlPatterns,
     onMessage,
     interceptConfig,
     originWhitelist = ['*'],
@@ -51,14 +51,21 @@ function Base(props: InterceptWebViewProps, ref: any) {
     () => buildInjector(interceptConfig),
     [interceptConfig]
   );
-  const regex = useMemo(() => compile(urlPattern), [urlPattern]);
+  const regexes = useMemo(
+    () => urlPatterns?.map((pattern) => compile(pattern)) ?? [],
+    [urlPatterns]
+  );
 
   const scriptKey = injector.length;
 
   const handleMessage = (e: WebViewMessageEvent) => {
     try {
       const pkt: NetworkEvent = JSON.parse(e.nativeEvent.data);
-      if (pkt.type === 'network' && (!regex || regex.test(pkt.request.url))) {
+      if (
+        pkt.type === 'network' &&
+        (!regexes.length ||
+          regexes.some((regex) => regex?.test(pkt.request.url)))
+      ) {
         onIntercept?.(pkt);
       }
     } catch {} // swallow non-sdk messages
@@ -77,11 +84,11 @@ function Base(props: InterceptWebViewProps, ref: any) {
       thirdPartyCookiesEnabled={thirdPartyCookiesEnabled}
       setSupportMultipleWindows={setSupportMultipleWindows}
       startInLoadingState={startInLoadingState}
-      {...(Platform.OS === 'android' && urlPattern
+      {...(Platform.OS === 'android' && urlPatterns
         ? {
-            urlPattern: (urlPattern instanceof RegExp
-              ? urlPattern.toString()
-              : urlPattern) as any,
+            urlPatterns: urlPatterns.map((pattern) =>
+              pattern instanceof RegExp ? pattern.toString() : pattern
+            ) as any,
           }
         : null)}
       {...rest}

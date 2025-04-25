@@ -70,7 +70,9 @@ export default function App() {
         <InterceptWebView
           ref={webViewRef}
           source={{ uri: 'https://account.venmo.com/?feed=mine' }}
-          urlPattern="https://account.venmo.com/api/stories\\?feedType=me&externalId=\\S+"
+          urlPatterns={[
+            'https://account.venmo.com/api/stories\\?feedType=me&externalId=\\S+',
+          ]}
           interceptConfig={{
             xhr: true,
             fetch: true,
