@@ -1,6 +1,6 @@
 import type { InterceptConfig } from '../types';
 
-/* Escape *only* back-ticks so Metro / Hermes don’t mangle template strings */
+/* Escape *only* back-ticks so Metro / Hermes don't mangle template strings */
 const esc = (s: string) => s.replace(/`/g, '\\`');
 
 export function buildInjector(cfg: InterceptConfig = {}): string {
@@ -30,6 +30,10 @@ export function buildInjector(cfg: InterceptConfig = {}): string {
     try { return new URL(u, location.href).origin === location.origin; }
     catch (_) { return false; }
   };
+  var normalizeUrl = function (u) {
+    try { return new URL(u, location.href).href; }
+    catch (_) { return u; }
+  };
 
   /* ─────────── FETCH ─────────── */
   if (ENABLE_FETCH && !window.fetch.__SDK_WRAPPED__) {
@@ -40,6 +44,9 @@ export function buildInjector(cfg: InterceptConfig = {}): string {
             init   = args[1] || {};
         var url    = (input && input.url) ? input.url : String(input);
         var method = (init.method || 'GET').toUpperCase();
+
+        // Normalize request URL for fetch only
+        var normalizedUrl = normalizeUrl(url);
 
         /* headers */
         var reqH = toObj(new Headers(init.headers || {}));
@@ -81,6 +88,9 @@ export function buildInjector(cfg: InterceptConfig = {}): string {
                 mime.indexOf('text/')===0            ? 'text'  :
                 'binary';
 
+            // Normalize response URL for fetch only
+            var normalizedResUrl = normalizeUrl(res.url);
+
             var resBody = null;
             return res.clone().blob().then(function (b) {
               if (b.size > MAX_BYTES) resBody='[truncated]';
@@ -93,12 +103,12 @@ export function buildInjector(cfg: InterceptConfig = {}): string {
                 type:'network',
                 api :'fetch',
                 request :{
-                  url:url, method:method, headers:reqH,
+                  url:normalizedUrl, method:method, headers:reqH,
                   body:reqBody===undefined?null:reqBody,
-                  cookie:sameOrigin(url)?(document.cookie||null):null
+                  cookie:sameOrigin(normalizedUrl)?(document.cookie||null):null
                 },
                 response:{
-                  url:res.url, status:res.status, headers:resH,
+                  url:normalizedResUrl, status:res.status, headers:resH,
                   body:resBody, type:respType
                 }
               });
@@ -118,6 +128,7 @@ export function buildInjector(cfg: InterceptConfig = {}): string {
     var open = XHR.open, send = XHR.send, setHeader = XHR.setRequestHeader;
 
     XHR.open = function (m,u){
+      // XHR URLs are already normalized by the browser
       this.__meta = { method:m, url:u, headers:{} };
       return open.apply(this, arguments);
     };
@@ -149,6 +160,7 @@ export function buildInjector(cfg: InterceptConfig = {}): string {
             mime.indexOf('text/')===0            ? 'text':
             'binary';
 
+        // XHR responseURL is already normalized by the browser
         post({
           type:'network',
           api :'xhr',
@@ -168,6 +180,7 @@ export function buildInjector(cfg: InterceptConfig = {}): string {
   if (ENABLE_HTML) {
     window.addEventListener('load', function(){
       try{
+        // location.href is already normalized
         post({
           type:'network',
           api :'document',

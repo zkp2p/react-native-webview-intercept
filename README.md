@@ -1,18 +1,21 @@
-# react-native-webview-intercept-sdk
+# react-native-webview-intercept
 
-Intercepts requests in webview
+Intercepts requests in webview and returns the request and response payloads to the host app. Works for fetch, xhr, and html form submissions. Supports existing webview props.
+
+Package is under heavy development and subject to change.
 
 ## Installation
 
 ```sh
-yarn install react-native-webview-intercept
+yarn add @zkp2p/react-native-webview-intercept
+yarn add react-native-webview # peer dependency
 ```
 
 ## Usage
 See example app for usage
 
 ```js
-import { InterceptWebView } from 'react-native-webview-intercept';
+import { InterceptWebView } from '@zkp2p/react-native-webview-intercept';
 
 <InterceptWebView
     ref={webViewRef}
