@@ -128,8 +128,9 @@ export function buildInjector(cfg: InterceptConfig = {}): string {
     var open = XHR.open, send = XHR.send, setHeader = XHR.setRequestHeader;
 
     XHR.open = function (m,u){
-      // XHR URLs are already normalized by the browser
-      this.__meta = { method:m, url:u, headers:{} };
+      // Normalize the URL
+      var normalizedUrl = normalizeUrl(u);
+      this.__meta = { method:m, url:normalizedUrl, headers:{} };
       return open.apply(this, arguments);
     };
     XHR.setRequestHeader = function(k,v){

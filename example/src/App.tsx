@@ -25,7 +25,9 @@ const DEFAULT_USER_AGENT = Platform.select({
 });
 
 export default function App() {
-  const [url, setUrl] = useState('https://www.google.com');
+  const [url, setUrl] = useState(
+    'https://wise.com/all-transactions?direction=OUTGOING'
+  );
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const webViewRef = useRef<WebView>(null);
   const notificationId = useRef(0);
@@ -69,9 +71,11 @@ export default function App() {
       <View style={styles.webviewContainer}>
         <InterceptWebView
           ref={webViewRef}
-          source={{ uri: 'https://account.venmo.com/?feed=mine' }}
+          source={{
+            uri: 'https://wise.com/all-transactions?direction=OUTGOING',
+          }}
           urlPatterns={[
-            'https://account.venmo.com/api/stories\\?feedType=me&externalId=\\S+',
+            'https://wise.com/gateway/v1/profiles/\\S+/activities/list',
           ]}
           interceptConfig={{
             xhr: true,

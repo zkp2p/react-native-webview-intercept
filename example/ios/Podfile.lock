@@ -1547,7 +1547,7 @@ PODS:
     - React-perflogger (= 0.78.2)
     - React-utils (= 0.78.2)
   - SocketRocket (0.7.1)
-  - WebviewInterceptSdk (0.1.1):
+  - WebviewInterceptSdk (0.3.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1853,7 +1853,7 @@ SPEC CHECKSUMS:
   ReactCodegen: 99ea3536c05be3c18d0c517acb56b5a6d726fc7b
   ReactCommon: 865ebe76504a95e115b6229dd00a31e56d2d4bfe
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  WebviewInterceptSdk: 1ba303eb9aebfd554cdd4bbe6a9191d186a06114
+  WebviewInterceptSdk: bbe5541eea245ada0150a99ecd4e52ab170b34be
   Yoga: e14bad835e12b6c7e2260fc320bd00e0f4b45add
 
 PODFILE CHECKSUM: 45b27db0c98bdf1875a7c5c93a5c67c9d865afc7
