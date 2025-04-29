@@ -1,6 +1,6 @@
 {
   "name": "@zkp2p/react-native-webview-intercept",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Wrapper around react-native-webview that intercepts fetch and XHR requests and responses",
   "source": "./src/index.tsx",
   "main": "./lib/module/index.js",
