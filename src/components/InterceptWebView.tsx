@@ -87,7 +87,17 @@ function Base(props: InterceptWebViewProps, ref: any) {
             }
             const allCookies = await CookieManager.getAll(true);
             const filteredCookies = Object.entries(allCookies)
-              .filter(([_, v]) => (v.domain ?? '').includes(domain))
+              .filter(([_, v]) => {
+                if (!v.domain) return false;
+                // Remove leading dot for comparison
+                const cookieDomain = v.domain.startsWith('.')
+                  ? v.domain.slice(1)
+                  : v.domain;
+                // Match if hostname is the same or ends with .cookieDomain
+                return (
+                  domain === cookieDomain || domain.endsWith('.' + cookieDomain)
+                );
+              })
               .map(([k, v]) => `${k}=${v.value}`)
               .join('; ');
             cookies = filteredCookies;
