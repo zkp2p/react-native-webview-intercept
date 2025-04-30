@@ -67,20 +67,34 @@ function Base(props: InterceptWebViewProps, ref: any) {
         (!regexes.length ||
           regexes.some((regex) => regex?.test(pkt.request.url)))
       ) {
-        // Fetch cookies natively for the request URL
         let cookies = '';
         try {
-          const cookieObj =
-            Platform.OS === 'ios'
-              ? await CookieManager.getAll(true)
-              : await CookieManager.get(pkt.request.url);
-          cookies = Object.entries(cookieObj)
-            .map(([k, v]) => `${k}=${v.value}`)
-            .join('; ');
+          if (Platform.OS === 'android') {
+            // Android: get cookies for the specific URL
+            const cookieObj = await CookieManager.get(pkt.request.url);
+            cookies = Object.entries(cookieObj)
+              .map(([k, v]) => `${k}=${v.value}`)
+              .join('; ');
+          } else {
+            // iOS: get all cookies, filter by domain using native URL
+            let domain = '';
+            try {
+              domain = new URL(pkt.request.url).hostname;
+            } catch {
+              // fallback: extract domain with regex if URL parsing fails
+              const match = pkt.request.url.match(/^https?:\/\/([^/]+)/);
+              domain = match?.[1] ?? '';
+            }
+            const allCookies = await CookieManager.getAll(true);
+            const filteredCookies = Object.entries(allCookies)
+              .filter(([_, v]) => (v.domain ?? '').includes(domain))
+              .map(([k, v]) => `${k}=${v.value}`)
+              .join('; ');
+            cookies = filteredCookies;
+          }
         } catch (err) {
           console.log('Error fetching cookies', err);
         }
-        // Attach cookies to the event payload
         pkt.request.cookie = cookies;
         onIntercept?.(pkt);
       }
