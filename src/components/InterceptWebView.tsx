@@ -6,6 +6,7 @@ import WebView, {
 } from 'react-native-webview';
 import type { InterceptConfig, NetworkEvent } from '../types';
 import { buildInjector } from '../helpers/injectorBuilder';
+import CookieManager from '@react-native-cookies/cookies';
 
 export interface InterceptWebViewProps
   extends Omit<
@@ -58,7 +59,7 @@ function Base(props: InterceptWebViewProps, ref: any) {
 
   const scriptKey = injector.length;
 
-  const handleMessage = (e: WebViewMessageEvent) => {
+  const handleMessage = async (e: WebViewMessageEvent) => {
     try {
       const pkt: NetworkEvent = JSON.parse(e.nativeEvent.data);
       if (
@@ -66,6 +67,21 @@ function Base(props: InterceptWebViewProps, ref: any) {
         (!regexes.length ||
           regexes.some((regex) => regex?.test(pkt.request.url)))
       ) {
+        // Fetch cookies natively for the request URL
+        let cookies = '';
+        try {
+          const cookieObj =
+            Platform.OS === 'ios'
+              ? await CookieManager.getAll(true)
+              : await CookieManager.get(pkt.request.url);
+          cookies = Object.entries(cookieObj)
+            .map(([k, v]) => `${k}=${v.value}`)
+            .join('; ');
+        } catch (err) {
+          console.log('Error fetching cookies', err);
+        }
+        // Attach cookies to the event payload
+        pkt.request.cookie = cookies;
         onIntercept?.(pkt);
       }
     } catch {} // swallow non-sdk messages

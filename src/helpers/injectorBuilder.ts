@@ -105,7 +105,6 @@ export function buildInjector(cfg: InterceptConfig = {}): string {
                 request :{
                   url:normalizedUrl, method:method, headers:reqH,
                   body:reqBody===undefined?null:reqBody,
-                  cookie:sameOrigin(normalizedUrl)?(document.cookie||null):null
                 },
                 response:{
                   url:normalizedResUrl, status:res.status, headers:resH,
@@ -142,7 +141,6 @@ export function buildInjector(cfg: InterceptConfig = {}): string {
       if (body && typeof body!=='string') body='[binary]';
       if (body && body.length>MAX_BYTES)  body='[truncated]';
       meta.body = body===undefined?null:body;
-      meta.cookie = sameOrigin(meta.url)?(document.cookie||null):null;
 
       this.addEventListener('load', function(){
         var raw=this.getAllResponseHeaders().trim().split(/\\r?\\n/);
@@ -187,7 +185,7 @@ export function buildInjector(cfg: InterceptConfig = {}): string {
           api :'document',
           request :{
             url:location.href, method:'GET', headers:{},
-            body:null, cookie:document.cookie||null
+            body:null,
           },
           response:{
             url:location.href, status:200, headers:{},
