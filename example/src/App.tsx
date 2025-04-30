@@ -25,9 +25,7 @@ const DEFAULT_USER_AGENT = Platform.select({
 });
 
 export default function App() {
-  const [url, setUrl] = useState(
-    'https://wise.com/all-transactions?direction=OUTGOING'
-  );
+  const [url, setUrl] = useState('https://account.venmo.com');
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const webViewRef = useRef<WebView>(null);
   const notificationId = useRef(0);
@@ -37,7 +35,6 @@ export default function App() {
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
       finalUrl = 'https://' + url;
     }
-    console.log('finalUrl', finalUrl);
     setUrl(finalUrl);
     webViewRef.current?.injectJavaScript(
       `window.location.href = '${finalUrl}'`
@@ -72,11 +69,9 @@ export default function App() {
         <InterceptWebView
           ref={webViewRef}
           source={{
-            uri: 'https://wise.com/all-transactions?direction=OUTGOING',
+            uri: 'https://account.venmo.com',
           }}
-          urlPatterns={[
-            'https://wise.com/gateway/v1/profiles/\\S+/activities/list',
-          ]}
+          urlPatterns={['.*']}
           interceptConfig={{
             xhr: true,
             fetch: true,
