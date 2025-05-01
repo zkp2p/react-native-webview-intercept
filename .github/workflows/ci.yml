@@ -100,17 +100,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Configure Gradle
-        if: env.turbo_cache_hit != 1
-        run: |
-          echo "org.gradle.unsafe.configuration-cache=false" >> example/android/gradle.properties
-          echo "android.enableUnitTestBinaryResources=false" >> example/android/gradle.properties
-
       - name: Build example for Android
         env:
           JAVA_OPTS: "-XX:MaxHeapSize=6g"
         run: |
-          yarn turbo run build:android --cache-dir="${{ env.TURBO_CACHE_DIR }}"
+          cd example/android
+          ./gradlew app:bundleDebug --no-daemon --console=plain -PreactNativeArchitectures=arm64-v8a --warning-mode none --no-configuration-cache
 
   build-ios:
     runs-on: macos-latest
