@@ -22,7 +22,6 @@ export interface InterceptWebViewProps
   interceptConfig?: InterceptConfig;
 }
 
-/* Util: string ⟷ RegExp */
 const compile = (p?: RegExp | string | null) => {
   if (!p) return null;
   if (typeof p === 'string') {
@@ -85,17 +84,24 @@ function Base(props: InterceptWebViewProps, ref: any) {
               const match = pkt.request.url.match(/^https?:\/\/([^/]+)/);
               domain = match?.[1] ?? '';
             }
+
             const allCookies = await CookieManager.getAll(true);
             const filteredCookies = Object.entries(allCookies)
               .filter(([_, v]) => {
-                if (!v.domain) return false;
+                if (!v.domain) return false; // Reject cookies without domain for safety
+
                 // Remove leading dot for comparison
                 const cookieDomain = v.domain.startsWith('.')
                   ? v.domain.slice(1)
                   : v.domain;
-                // Match if hostname is the same or ends with .cookieDomain
+                const requestDomain = domain.toLowerCase();
+
+                // Only allow cookies if:
+                // 1. Exact domain match
+                // 2. Cookie domain is parent domain of request domain
                 return (
-                  domain === cookieDomain || domain.endsWith('.' + cookieDomain)
+                  requestDomain === cookieDomain ||
+                  requestDomain.endsWith('.' + cookieDomain)
                 );
               })
               .map(([k, v]) => `${k}=${v.value}`)
