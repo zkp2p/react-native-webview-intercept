@@ -20,6 +20,7 @@ export interface InterceptWebViewProps
   style?: ViewStyle | ViewStyle[];
   onMessage?: (event: WebViewMessageEvent) => void;
   interceptConfig?: InterceptConfig;
+  additionalCookieDomainsToInclude?: string[];
 }
 
 const compile = (p?: RegExp | string | null) => {
@@ -38,6 +39,7 @@ function Base(props: InterceptWebViewProps, ref: any) {
     urlPatterns,
     onMessage,
     interceptConfig,
+    additionalCookieDomainsToInclude,
     originWhitelist = ['*'],
     javaScriptEnabled = true,
     domStorageEnabled = true,
@@ -95,6 +97,9 @@ function Base(props: InterceptWebViewProps, ref: any) {
                   ? v.domain.slice(1)
                   : v.domain;
                 const requestDomain = domain.toLowerCase();
+                if (additionalCookieDomainsToInclude?.includes(cookieDomain)) {
+                  return true;
+                }
 
                 // Only allow cookies if:
                 // 1. Exact domain match
